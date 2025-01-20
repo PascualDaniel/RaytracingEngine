@@ -13,12 +13,12 @@ RayTracing Engine is a project developed by following the book [Ray Tracing in O
 
 ## Installation
 1. Clone the repository:
- 1.1 git clone https://github.com/your_username/RaytracingEngine.git
- 1.2 your_username/RaytracingEngine.git
+ - git clone https://github.com/your_username/RaytracingEngine.git
+ - your_username/RaytracingEngine.git
 2. Navigate to the project directory:
- 2.1 cd RaytracingEngine
+ - cd RaytracingEngine
 3. Compile the project:
- 3.1 make
+ - make
  ## Usage
 Run the generated binary to start the raytraing engine:
 

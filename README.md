@@ -24,9 +24,3 @@ Run the generated binary to start the raytraing engine:
 
 ## Resources
 - [Ray Tracing in One Weekend](https://raytracing.github.io/)
-
-## Contributions
-Contributions are welcome. Please open an issue or a pull request to discuss any changes you would like to make.
-
-## License
-This project is licensed under the MIT License. See the LICENSE file for more details.

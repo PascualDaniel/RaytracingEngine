@@ -16,6 +16,8 @@ int main() {
 
     hittable_list world;
 
+    auto R = std::cos(pi/4);
+    
     auto material_ground = make_shared<lambertian>(color(0.09, 0.38, 0.09));
     auto material_center = make_shared<lambertian>(color(0.96, 0.51, 0));
     auto material_left   = make_shared<dielectric>(1.50);
@@ -35,5 +37,10 @@ int main() {
     cam.image_width = 400;
     cam.samples_per_pixel = 100;
     cam.max_depth         = 50;
+    cam.vfov = 50;
+    cam.lookfrom = point3(-2,2,1);
+    cam.lookat   = point3(0,0,-1);
+    cam.vup      = vec3(0,1,0);
+
     cam.render(world);
 }

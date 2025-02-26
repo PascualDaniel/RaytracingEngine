@@ -29,11 +29,16 @@ inline double random_double() {
     static std::mt19937 generator;
     return distribution(generator);
 }
+
 inline double random_double(double min, double max) {
     // Returns a random real in [min,max).
     return min + (max - min) * random_double();
 }
 
+inline int random_int(int min, int max) {
+    // Returns a random integer in [min,max].
+    return int(random_double(min, max+1));
+}
 // Common Headers
 
 #include "color.h"

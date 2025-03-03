@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include "hittable.h"
+#include "texture.h"
 #include "vec3.h"
 
 class material
@@ -9,6 +10,7 @@ class material
 public:
     virtual ~material() = default;
 
+    
     virtual bool scatter(
         const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
     ) const
@@ -20,9 +22,9 @@ public:
 class lambertian : public material
 {
 public:
-    lambertian(const color& albedo) : albedo(albedo)
-    {
-    }
+    lambertian(const color& albedo) : tex(make_shared<solid_color>(albedo)) {}
+    lambertian(shared_ptr<texture> tex) : tex(tex) {}
+
 
     bool scatter(const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered)
     const override
@@ -33,11 +35,12 @@ public:
             scatter_direction = rec.normal;
         scattered = ray(rec.p, scatter_direction);
         scattered = ray(rec.p, scatter_direction, r_in.time());
-        attenuation = albedo;
+        attenuation = tex->value(rec.u, rec.v, rec.p);
         return true;
     }
 
 private:
+    shared_ptr<texture> tex;
     color albedo;
 };
 

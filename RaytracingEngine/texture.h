@@ -3,6 +3,7 @@
 
 
 #include "rtw_stb_image.h"
+#include "perlin.h"
 
 class texture {
 public:
@@ -49,6 +50,19 @@ private:
     shared_ptr<texture> odd;
 };
 
+class noise_texture : public texture {
+public:
+    noise_texture(double scale) : scale(scale) {}
+
+
+    color value(double u, double v, const point3& p) const override {
+        return color(1,1,1) * noise.noise(scale * p);
+    }
+
+private:
+    perlin noise;
+    double scale;
+};
 
 class image_texture : public texture {
 public:

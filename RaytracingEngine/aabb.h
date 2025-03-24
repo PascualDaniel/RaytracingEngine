@@ -29,6 +29,8 @@ public:
         y = interval(box0.y, box1.y);
         z = interval(box0.z, box1.z);
     }
+
+    
     const interval& axis_interval(int n) const {
         if (n == 1) return y;
         if (n == 2) return z;
@@ -59,6 +61,16 @@ public:
         }
         return true;
     }
+    int longest_axis() const {
+        // Returns the index of the longest axis of the bounding box.
+
+        if (x.size() > y.size())
+            return x.size() > z.size() ? 0 : 2;
+        else
+            return y.size() > z.size() ? 1 : 2;
+    }
+
+    static const aabb empty, universe;
 private:
 
     void pad_to_minimums() {
@@ -71,5 +83,14 @@ private:
     }
 };
 
+const aabb aabb::empty    = aabb(interval::empty,    interval::empty,    interval::empty);
+const aabb aabb::universe = aabb(interval::universe, interval::universe, interval::universe);
 
+aabb operator+(const aabb& bbox, const vec3& offset) {
+    return aabb(bbox.x + offset.x(), bbox.y + offset.y(), bbox.z + offset.z());
+}
+
+aabb operator+(const vec3& offset, const aabb& bbox) {
+    return bbox + offset;
+}
 #endif

@@ -16,12 +16,24 @@ using std::shared_ptr;
 // Constants
 
 const float infinity = std::numeric_limits<float>::infinity();
-const float pi = 3.1415926535897932385;
+
+#ifdef __CUDACC__
+__host__ __device__ inline float get_pi() {
+    return 3.1415926535897932385f;
+}
+#else
+constexpr float pi = 3.1415926535897932385f;
+#endif
+
 
 // Utility Functions
 
 inline float degrees_to_radians(float degrees) {
-    return degrees * pi / 180.0;
+#ifdef __CUDACC__
+    return degrees * get_pi() / 180.0f;
+#else
+    return degrees * pi / 180.0f;
+#endif
 }
 
 inline float random_float() {
@@ -37,14 +49,14 @@ inline float random_float(float min, float max) {
 
 inline int random_int(int min, int max) {
     // Returns a random integer in [min,max].
-    return int(random_float(min, max+1));
+    return int(random_float(min, max + 1));
 }
+
 // Common Headers
 
 //#include "color.h"
 #include "interval.h"
 #include "ray.h"
 #include "vec3.h"
-
 
 #endif

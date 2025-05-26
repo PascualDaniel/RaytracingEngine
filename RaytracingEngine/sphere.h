@@ -1,23 +1,26 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
+#ifndef PI
+#define PI 3.14159265358979323846
+#endif
+
 #include "hittable.h"
 
 class sphere : public hittable {
 public:
-    // Stationary Sphere
+    // Esfera estacionaria
     __host__ __device__
-        sphere(const point3& static_center, double radius, shared_ptr<material> mat)
+        sphere(const point3& static_center, double radius, material* mat)
         : center(static_center, vec3(0, 0, 0)), radius(fmax(0.0, radius)), mat(mat)
     {
         auto rvec = vec3(radius, radius, radius);
         bbox = aabb(static_center - rvec, static_center + rvec);
     }
 
-    // Moving Sphere
+    // Esfera en movimiento
     __host__ __device__
-        sphere(const point3& center1, const point3& center2, double radius,
-            shared_ptr<material> mat)
+        sphere(const point3& center1, const point3& center2, double radius, material* mat)
         : center(center1, center2 - center1), radius(fmax(0.0, radius)), mat(mat)
     {
         auto rvec = vec3(radius, radius, radius);
@@ -40,7 +43,7 @@ public:
 
         auto sqrtd = sqrt(discriminant);
 
-        // Find the nearest root that lies in the acceptable range.
+        // Encuentra la raíz más cercana dentro del rango permitido.
         auto root = (h - sqrtd) / a;
         if (!ray_t.surrounds(root)) {
             root = (h + sqrtd) / a;
@@ -63,15 +66,15 @@ public:
 private:
     ray center;
     double radius;
-    shared_ptr<material> mat;
+    material* mat; // puntero raw
     aabb bbox;
 
     __host__ __device__
         static void get_sphere_uv(const point3& p, double& u, double& v) {
         auto theta = acos(-p.y());
-        auto phi = atan2(-p.z(), p.x()) + pi;
-        u = phi / (2 * pi);
-        v = theta / pi;
+        auto phi = atan2(-p.z(), p.x()) + PI; // Use the defined PI
+        u = phi / (2 * PI);
+        v = theta / PI;
     }
 };
 

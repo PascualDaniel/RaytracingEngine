@@ -9,7 +9,7 @@ class hit_record {
 public:
     point3 p;
     vec3 normal;
-    shared_ptr<material> mat;
+    material* mat; // Cambiado a puntero raw
     double t;
     double u;
     double v;
@@ -25,7 +25,7 @@ public:
 class hittable {
 public:
     __host__ __device__
-        virtual ~hittable() = default;
+        virtual ~hittable() {}
 
     __host__ __device__
         virtual bool hit(const ray& r, interval ray_t, hit_record& rec) const = 0;
@@ -36,8 +36,12 @@ public:
 
 class translate : public hittable {
 public:
+    hittable* object; // puntero raw
+    vec3 offset;
+    aabb bbox;
+
     __host__ __device__
-        translate(shared_ptr<hittable> object, const vec3& offset)
+        translate(hittable* object, const vec3& offset)
         : object(object), offset(offset)
     {
         bbox = object->bounding_box() + offset;
@@ -54,17 +58,17 @@ public:
 
     __host__ __device__
         aabb bounding_box() const override { return bbox; }
-
-private:
-    shared_ptr<hittable> object;
-    vec3 offset;
-    aabb bbox;
 };
 
 class rotate_y : public hittable {
 public:
+    hittable* object; // puntero raw
+    double sin_theta;
+    double cos_theta;
+    aabb bbox;
+
     __host__ __device__
-        rotate_y(shared_ptr<hittable> object, double angle) : object(object) {
+        rotate_y(hittable* object, double angle) : object(object) {
         auto radians = degrees_to_radians(angle);
         sin_theta = sin(radians);
         cos_theta = cos(radians);
@@ -132,11 +136,6 @@ public:
 
     __host__ __device__
         aabb bounding_box() const override { return bbox; }
-
-private:
-    shared_ptr<hittable> object;
-    double sin_theta;
-    double cos_theta;
-    aabb bbox;
 };
+
 #endif

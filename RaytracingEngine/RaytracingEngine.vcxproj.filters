@@ -15,43 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aabb.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="bvh.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="color.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="constant_medium.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="hittable.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="hittable_list.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="interval.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="material.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="perlin.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
-    <ClInclude Include="quad.h">
-      <Filter>Archivos de recursos</Filter>
-    </ClInclude>
     <ClInclude Include="ray.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>
-    <ClInclude Include="rtw_stb_image.h">
+    <ClInclude Include="vec3.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>
     <ClInclude Include="rtweekend.h">
@@ -60,10 +27,13 @@
     <ClInclude Include="sphere.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
+    <ClInclude Include="hittable.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>
-    <ClInclude Include="vec3.h">
+    <ClInclude Include="aabb.h">
+      <Filter>Archivos de recursos</Filter>
+    </ClInclude>
+    <ClInclude Include="interval.h">
       <Filter>Archivos de recursos</Filter>
     </ClInclude>
   </ItemGroup>

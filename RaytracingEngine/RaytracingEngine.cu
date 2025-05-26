@@ -1,20 +1,12 @@
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
-#include "rtweekend.h"
-
 #include <iostream>
 #include <time.h>
+#include "rtweekend.h"
 
-#include "bvh.h"
-#include "camera.h"
 #include "hittable.h"
-#include "hittable_list.h"
-#include "material.h"
 #include "sphere.h"
-#include "texture.h"
-#include "quad.h"
-#include "constant_medium.h"
 
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -29,7 +21,7 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
         exit(99);
     }
 }
-
+/*
 void bouncing_spheres() {
     hittable_list world;
 
@@ -320,15 +312,34 @@ void cornell_smoke() {
     cam.render(world);
 }
 
+*/
+__device__ bool hit_sphere(const vec3& center, float radius, const ray& r) {
+    vec3 oc = r.origin() - center;
+    float a = dot(r.direction(), r.direction());
+    float b = 2.0f * dot(oc, r.direction());
+    float c = dot(oc, oc) - radius * radius;
+    float discriminant = b * b - 4.0f * a * c;
+    return (discriminant > 0.0f);
+}
 
-__global__ void render(float* fb, int max_x, int max_y) {
+__device__ vec3 color(const ray& r) {
+    if (hit_sphere(vec3(0, 0, -1), 0.5, r))
+        return vec3(1, 0, 0);
+    vec3 unit_direction = unit_vector(r.direction());
+    float t = 0.5f * (unit_direction.y() + 1.0f);
+    return (1.0f - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+}
+
+__global__ void render(vec3* fb, int max_x, int max_y,
+    vec3 lower_left_corner, vec3 horizontal, vec3 vertical, vec3 origin) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= max_x) || (j >= max_y)) return;
-    int pixel_index = j * max_x * 3 + i * 3;
-    fb[pixel_index + 0] = float(i) / max_x;
-    fb[pixel_index + 1] = float(j) / max_y;
-    fb[pixel_index + 2] = 0.2;
+    int pixel_index = j * max_x + i;
+    float u = float(i) / float(max_x);
+    float v = float(j) / float(max_y);
+    ray r(origin, lower_left_corner + u * horizontal + v * vertical);
+    fb[pixel_index] = color(r);
 }
 
 void cuda_render() {
@@ -341,10 +352,10 @@ void cuda_render() {
     std::cerr << "in " << tx << "x" << ty << " blocks.\n";
 
     int num_pixels = nx * ny;
-    size_t fb_size = 3 * num_pixels * sizeof(float);
+    size_t fb_size = num_pixels * sizeof(vec3);
 
     // allocate FB
-    float* fb;
+    vec3* fb;
     checkCudaErrors(cudaMallocManaged((void**)&fb, fb_size));
 
     clock_t start, stop;
@@ -352,7 +363,11 @@ void cuda_render() {
     // Render our buffer
     dim3 blocks(nx / tx + 1, ny / ty + 1);
     dim3 threads(tx, ty);
-    render <<<blocks, threads >>> (fb, nx, ny);
+    render << <blocks, threads >> > (fb, nx, ny,
+        vec3(-2.0, -1.0, -1.0),
+        vec3(4.0, 0.0, 0.0),
+        vec3(0.0, 2.0, 0.0),
+        vec3(0.0, 0.0, 0.0));
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
     stop = clock();
@@ -363,13 +378,10 @@ void cuda_render() {
     std::cout << "P3\n" << nx << " " << ny << "\n255\n";
     for (int j = ny - 1; j >= 0; j--) {
         for (int i = 0; i < nx; i++) {
-            size_t pixel_index = j * 3 * nx + i * 3;
-            float r = fb[pixel_index + 0];
-            float g = fb[pixel_index + 1];
-            float b = fb[pixel_index + 2];
-            int ir = int(255.99 * r);
-            int ig = int(255.99 * g);
-            int ib = int(255.99 * b);
+            size_t pixel_index = j * nx + i;
+            int ir = int(255.99 * fb[pixel_index].r());
+            int ig = int(255.99 * fb[pixel_index].g());
+            int ib = int(255.99 * fb[pixel_index].b());
             std::cout << ir << " " << ig << " " << ib << "\n";
         }
     }
@@ -378,6 +390,7 @@ void cuda_render() {
 }
 
 int main() {
+    /*
     switch (9) {
     case 1:  bouncing_spheres();  break;
     case 2:  checkered_spheres(); break;
@@ -388,5 +401,6 @@ int main() {
     case 7:  cornell_box();        break;
     case 8:  cornell_smoke();      break;
     case 9:  cuda_render();      break;
+    */
+    cuda_render();
     }
-}
